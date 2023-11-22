@@ -6,6 +6,10 @@
 .PARAMETER purge
     Persisted data will be deleted.
 #>
+[CmdletBinding(
+    ConfirmImpact = 'High',
+    SupportsShouldProcess
+)]
 param(
     [bool] $global,
     [bool] $purge
@@ -22,13 +26,13 @@ if ($global -and !(is_admin)) {
     exit 1
 }
 
-if ($purge) {
-    warn 'This will uninstall Scoop, all the programs that have been installed with Scoop and all persisted data!'
+$message = if ($purge) {
+    'This will uninstall Scoop, all the programs that have been installed with Scoop and all persisted data!'
 } else {
-    warn 'This will uninstall Scoop and all the programs that have been installed with Scoop!'
+    'This will uninstall Scoop and all the programs that have been installed with Scoop!'
 }
-$yn = Read-Host 'Are you sure? (yN)'
-if ($yn -notlike 'y*') { exit }
+
+if (-not $PSCmdlet.ShouldProcess('Uninstalling Scoop', $message + ' Are you sure?', 'Uninstall Scope')) { exit }
 
 $errors = $false
 
